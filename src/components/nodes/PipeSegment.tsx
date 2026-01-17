@@ -6,6 +6,7 @@ import { Pipe, Outlet } from '@/types';
 import { toIsometric } from '@/utils/geometry';
 import { CANVAS_CONFIG, COLORS, NODE_CONFIG } from '@/utils/constants';
 import { TooltipData } from '@/components/canvas/TooltipLayer';
+import { StatusBadge } from './StatusBadge';
 
 interface PipeSegmentProps {
   pipe: Pipe;
@@ -44,6 +45,19 @@ export const PipeSegment: React.FC<PipeSegmentProps> = ({ pipe, fromOutlet, toOu
   const midX = (x1 + x2) / 2;
   const midY = (y1 + y2) / 2;
 
+  // Calculate stroke width based on pipe diameter (visual scaling)
+  const getStrokeWidth = () => {
+    const baseDiameter = pipe.diameter;
+    const scaleFactor = baseDiameter / 100; // Scale relative to 100mm base
+    const baseWidth = NODE_CONFIG.pipeStrokeWidth;
+    const calculatedWidth = baseWidth * scaleFactor;
+    
+    // Clamp between 2 and 12 pixels
+    const clampedWidth = Math.max(2, Math.min(12, calculatedWidth));
+    
+    return isHovered ? clampedWidth + 2 : clampedWidth;
+  };
+
   const handleMouseEnter = (e: any) => {
     setIsHovered(true);
     const stage = e.target.getStage();
@@ -80,7 +94,7 @@ export const PipeSegment: React.FC<PipeSegmentProps> = ({ pipe, fromOutlet, toOu
       <Line
         points={[x1, y1, x2, y2]}
         stroke={getColor()}
-        strokeWidth={isHovered ? NODE_CONFIG.pipeStrokeWidth + 2 : NODE_CONFIG.pipeStrokeWidth}
+        strokeWidth={getStrokeWidth()}
         opacity={isHovered ? 1 : 0.8}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -101,6 +115,11 @@ export const PipeSegment: React.FC<PipeSegmentProps> = ({ pipe, fromOutlet, toOu
         fontSize={9}
         fill="#666"
       />
+      
+      {/* Status badge for pipe errors/warnings */}
+      {pipe.status && pipe.status !== 'OK' && (
+        <StatusBadge status={pipe.status} x={midX} y={midY + 15} />
+      )}
     </Group>
   );
 };

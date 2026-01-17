@@ -1,37 +1,39 @@
 // Main App Component
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { ProjectForm } from '@/components/ui/ProjectForm';
 import { SystemStatusPanel } from '@/components/ui/SystemStatusPanel';
+import { ValidationDetailsPanel } from '@/components/ui/ValidationDetailsPanel';
 import { CanvasControls } from '@/components/ui/CanvasControls';
-import { IsometricStage } from '@/components/canvas/IsometricStage';
+import { IsometricStage, IsometricStageHandle } from '@/components/canvas/IsometricStage';
 
 function App() {
   const { project, pipes, validation, updateOutlet } = useProjectStore();
   const [currentZoom, setCurrentZoom] = useState(1);
+  const stageRef = useRef<IsometricStageHandle>(null);
 
   const handleOutletDragEnd = (id: string, x: number, y: number) => {
     updateOutlet(id, { x, y });
   };
 
   const handleZoomIn = () => {
-    setCurrentZoom(prev => Math.min(3, prev * 1.2));
+    stageRef.current?.zoomIn();
   };
 
   const handleZoomOut = () => {
-    setCurrentZoom(prev => Math.max(0.5, prev / 1.2));
+    stageRef.current?.zoomOut();
   };
 
   const handleResetView = () => {
-    setCurrentZoom(1);
+    stageRef.current?.resetView();
   };
 
   return (
     <div style={styles.app}>
       <header style={styles.header}>
         <h1 style={styles.headerTitle}>🌧️ Siphonic Roof Drainage Design Tool</h1>
-        <p style={styles.headerSubtitle}>Phase 2 - Interactive Diagram</p>
+        <p style={styles.headerSubtitle}>Phase 3 - Engineering Logic & Validation</p>
       </header>
 
       <div style={styles.layout}>
@@ -44,9 +46,17 @@ function App() {
               <SystemStatusPanel validation={validation} />
             </div>
           )}
+          
+          {project && project.outlets.length > 0 && (
+            <ValidationDetailsPanel 
+              validation={validation}
+              outlets={project.outlets}
+              pipes={pipes}
+            />
+          )}
         </aside>
 
-        {/* Main Canvas Area */}
+        {/* Main Canvas */}
         <main style={styles.main}>
           {project && project.outlets.length > 0 ? (
             <>
@@ -65,6 +75,7 @@ function App() {
                 />
               </div>
               <IsometricStage
+                ref={stageRef}
                 outlets={project.outlets}
                 pipes={pipes}
                 onOutletDragEnd={handleOutletDragEnd}

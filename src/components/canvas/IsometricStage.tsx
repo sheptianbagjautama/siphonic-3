@@ -1,6 +1,6 @@
 // Isometric Stage - main Konva canvas component
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Stage } from 'react-konva';
 import { GridLayer } from './GridLayer';
 import { NodeLayer } from './NodeLayer';
@@ -16,12 +16,21 @@ interface IsometricStageProps {
   onZoomChange?: (zoom: number) => void;
 }
 
-export const IsometricStage: React.FC<IsometricStageProps> = ({
-  outlets,
-  pipes,
-  onOutletDragEnd,
-  onZoomChange,
-}) => {
+export interface IsometricStageHandle {
+  zoomIn: () => void;
+  zoomOut: () => void;
+  resetView: () => void;
+}
+
+export const IsometricStage = forwardRef<IsometricStageHandle, IsometricStageProps>((
+  {
+    outlets,
+    pipes,
+    onOutletDragEnd,
+    onZoomChange,
+  },
+  ref
+) => {
   const [selectedOutletId] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
   const [stageScale, setStageScale] = useState(1);
@@ -35,6 +44,20 @@ export const IsometricStage: React.FC<IsometricStageProps> = ({
       onZoomChange(limitedScale);
     }
   };
+
+  // Expose zoom methods to parent component
+  useImperativeHandle(ref, () => ({
+    zoomIn: () => {
+      updateZoom(stageScale * 1.2);
+    },
+    zoomOut: () => {
+      updateZoom(stageScale / 1.2);
+    },
+    resetView: () => {
+      updateZoom(1);
+      setStagePos({ x: 0, y: 0 });
+    },
+  }));
 
   const handleWheel = (e: any) => {
     e.evt.preventDefault();
@@ -124,4 +147,4 @@ export const IsometricStage: React.FC<IsometricStageProps> = ({
       </div>
     </div>
   );
-};
+});

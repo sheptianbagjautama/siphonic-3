@@ -6,6 +6,7 @@ import { Outlet } from '@/types';
 import { toIsometric } from '@/utils/geometry';
 import { CANVAS_CONFIG, COLORS, NODE_CONFIG } from '@/utils/constants';
 import { TooltipData } from '@/components/canvas/TooltipLayer';
+import { StatusBadge } from './StatusBadge';
 
 interface OutletNodeProps {
   outlet: Outlet;
@@ -110,6 +111,11 @@ export const OutletNode: React.FC<OutletNodeProps> = ({ outlet, onDragEnd, onHov
         offsetX={15}
         offsetY={-8}
       />
+      
+      {/* Status badge */}
+      {outlet.status && (
+        <StatusBadge status={outlet.status} x={12} y={-12} />
+      )}
     </Group>
   );
 };

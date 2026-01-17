@@ -1,7 +1,7 @@
 // Zustand store for project state management
 
 import { create } from 'zustand';
-import { Project, Outlet, Pipe, ValidationResult } from '@/types';
+import { Project, Outlet, Pipe, ValidationResult, SystemStatus } from '@/types';
 import { generateId } from '@/utils/geometry';
 import { calculateFlows } from '@/modules/calculation/flowCalculation';
 import { validateSystem } from '@/modules/validation/systemValidation';
@@ -108,12 +108,6 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     // Calculate flows for all outlets
     const outletsWithFlow = calculateFlows(project);
     
-    // Update project with calculated flows
-    const updatedProject = {
-      ...project,
-      outlets: outletsWithFlow,
-    };
-
     // Create pipes connecting outlets (simplified for Phase 1)
     // In a real system, this would be more complex with actual pipe routing
     const pipes: Pipe[] = [];
@@ -143,8 +137,27 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     // Validate system
     const validation = validateSystem(outletsWithFlow, pipes);
 
+    // Assign status to outlets based on validation
+    const outletsWithStatus = outletsWithFlow.map(outlet => {
+      // Check if outlet has balanced flow
+      const avgFlow = outletsWithFlow.reduce((sum, o) => sum + o.flow, 0) / outletsWithFlow.length;
+      const flowDeviation = Math.abs(outlet.flow - avgFlow) / avgFlow;
+      
+      let status: SystemStatus = 'OK';
+      if (flowDeviation > 0.2) {
+        status = 'ERROR';
+      } else if (flowDeviation > 0.1) {
+        status = 'WARNING';
+      }
+      
+      return { ...outlet, status };
+    });
+
     set({
-      project: updatedProject,
+      project: {
+        ...project,
+        outlets: outletsWithStatus,
+      },
       pipes,
       validation,
     });

@@ -19,6 +19,15 @@ A web-based Siphonic Roof Drainage design tool built with React, TypeScript, and
 - ✅ Hover highlights
 - ✅ Zoom controls
 
+### Phase 3 ✅
+- ✅ Enhanced pipe sizing with visual diameter representation
+- ✅ Comprehensive velocity validation
+- ✅ Error & warning visualization with status badges
+- ✅ Detailed validation panel with recommendations
+- ✅ Color-coded system status
+- ✅ Visual indicators on problematic components
+- ✅ Engineering insights and recommendations
+
 ## Installation
 
 ```bash
@@ -38,12 +47,15 @@ Open your browser to `http://localhost:5173`
 1. **Create a Project**: Fill in project details (name, rainfall intensity, roof area)
 2. **Add Outlets**: Click "Add Outlet" to add roof drainage outlets
 3. **Position Outlets**: Drag outlet nodes on the isometric canvas
-4. **Interact**: 
+4. **Validate System**: Observe real-time validation with color-coded status indicators
+5. **Review Issues**: Check the validation details panel for specific problems
+6. **Follow Recommendations**: Use engineering recommendations to optimize the system
+7. **Interact**: 
    - Hover over nodes/pipes to see detailed information
    - Drag the canvas to pan
    - Scroll to zoom in/out
    - Use zoom controls for precise control
-5. **View Results**: Check system status and validation results in the sidebar
+8. **View Results**: Monitor system status and validation results in the sidebar
 
 ## Technology Stack
 
