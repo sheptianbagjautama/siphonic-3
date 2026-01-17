@@ -1,23 +1,37 @@
 // Main App Component
 
-import React from 'react';
+import { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { ProjectForm } from '@/components/ui/ProjectForm';
 import { SystemStatusPanel } from '@/components/ui/SystemStatusPanel';
+import { CanvasControls } from '@/components/ui/CanvasControls';
 import { IsometricStage } from '@/components/canvas/IsometricStage';
 
 function App() {
   const { project, pipes, validation, updateOutlet } = useProjectStore();
+  const [currentZoom, setCurrentZoom] = useState(1);
 
   const handleOutletDragEnd = (id: string, x: number, y: number) => {
     updateOutlet(id, { x, y });
+  };
+
+  const handleZoomIn = () => {
+    setCurrentZoom(prev => Math.min(3, prev * 1.2));
+  };
+
+  const handleZoomOut = () => {
+    setCurrentZoom(prev => Math.max(0.5, prev / 1.2));
+  };
+
+  const handleResetView = () => {
+    setCurrentZoom(1);
   };
 
   return (
     <div style={styles.app}>
       <header style={styles.header}>
         <h1 style={styles.headerTitle}>🌧️ Siphonic Roof Drainage Design Tool</h1>
-        <p style={styles.headerSubtitle}>Phase 1 - Visual Demo</p>
+        <p style={styles.headerSubtitle}>Phase 2 - Interactive Diagram</p>
       </header>
 
       <div style={styles.layout}>
@@ -37,15 +51,24 @@ function App() {
           {project && project.outlets.length > 0 ? (
             <>
               <div style={styles.canvasHeader}>
-                <h2 style={styles.canvasTitle}>Isometric View</h2>
-                <p style={styles.canvasSubtitle}>
-                  Drag outlet nodes to reposition. Pipes update automatically.
-                </p>
+                <div>
+                  <h2 style={styles.canvasTitle}>Isometric View</h2>
+                  <p style={styles.canvasSubtitle}>
+                    Interactive diagram - hover for details, drag to reposition
+                  </p>
+                </div>
+                <CanvasControls
+                  onZoomIn={handleZoomIn}
+                  onZoomOut={handleZoomOut}
+                  onResetView={handleResetView}
+                  currentZoom={currentZoom}
+                />
               </div>
               <IsometricStage
                 outlets={project.outlets}
                 pipes={pipes}
                 onOutletDragEnd={handleOutletDragEnd}
+                onZoomChange={setCurrentZoom}
               />
             </>
           ) : (
@@ -59,7 +82,9 @@ function App() {
                   <li>Click "Create Project"</li>
                   <li>Click "Add Outlet" to add roof drainage outlets</li>
                   <li>Drag outlets on the canvas to position them</li>
-                  <li>View system status and validation results</li>
+                  <li>Hover over outlets and pipes for detailed information</li>
+                  <li>Use scroll wheel or controls to zoom</li>
+                  <li>Drag canvas to pan around</li>
                 </ol>
               </div>
             </div>
@@ -113,6 +138,9 @@ const styles = {
     padding: '15px 20px',
     borderRadius: '8px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   canvasTitle: {
     margin: 0,

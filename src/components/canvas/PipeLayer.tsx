@@ -4,13 +4,15 @@ import React from 'react';
 import { Layer } from 'react-konva';
 import { Pipe, Outlet } from '@/types';
 import { PipeSegment } from '@/components/nodes/PipeSegment';
+import { TooltipData } from './TooltipLayer';
 
 interface PipeLayerProps {
   pipes: Pipe[];
   outlets: Outlet[];
+  onHover: (tooltip: TooltipData | null) => void;
 }
 
-export const PipeLayer: React.FC<PipeLayerProps> = ({ pipes, outlets }) => {
+export const PipeLayer: React.FC<PipeLayerProps> = ({ pipes, outlets, onHover }) => {
   return (
     <Layer>
       {pipes.map(pipe => {
@@ -25,6 +27,7 @@ export const PipeLayer: React.FC<PipeLayerProps> = ({ pipes, outlets }) => {
             pipe={pipe}
             fromOutlet={fromOutlet}
             toOutlet={toOutlet}
+            onHover={onHover}
           />
         );
       })}

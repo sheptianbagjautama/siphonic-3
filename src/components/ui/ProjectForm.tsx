@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 
 export const ProjectForm: React.FC = () => {
-  const { project, createProject, updateProject, addOutlet } = useProjectStore();
+  const { project, createProject, addOutlet } = useProjectStore();
   
   const [name, setName] = useState('Siphonic Drainage Project');
   const [rainfallIntensity, setRainfallIntensity] = useState(100);
@@ -13,15 +13,6 @@ export const ProjectForm: React.FC = () => {
   const handleCreateProject = (e: React.FormEvent) => {
     e.preventDefault();
     createProject(name, rainfallIntensity, roofArea);
-  };
-
-  const handleUpdateProject = () => {
-    if (!project) return;
-    updateProject({
-      name,
-      rainfallIntensity,
-      roofArea,
-    });
   };
 
   const handleAddOutlet = () => {
