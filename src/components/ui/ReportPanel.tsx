@@ -19,7 +19,7 @@ export const ReportPanel: React.FC<ReportPanelProps> = ({ project, pipes, valida
     );
   }
 
-  const totalFlow = project.outlets.reduce((sum, o) => sum + o.flow, 0);
+  const totalFlow = project.outlets.reduce((sum, o) => sum + (o.flow || 0), 0);
   const avgFlow = project.outlets.length > 0 ? totalFlow / project.outlets.length : 0;
 
   return (
@@ -68,7 +68,7 @@ export const ReportPanel: React.FC<ReportPanelProps> = ({ project, pipes, valida
               {project.outlets.map(outlet => (
                 <tr key={outlet.id} style={styles.tableRow}>
                   <td style={styles.td}>{outlet.id}</td>
-                  <td style={styles.td}>{outlet.flow.toFixed(2)}</td>
+                  <td style={styles.td}>{(outlet.flow || 0).toFixed(2)}</td>
                   <td style={styles.td}>
                     <span style={getStatusBadgeStyle(outlet.status || 'OK')}>
                       {outlet.status || 'OK'}
@@ -123,7 +123,7 @@ export const ReportPanel: React.FC<ReportPanelProps> = ({ project, pipes, valida
           <div style={styles.validationBox}>
             <div style={styles.validationHeader}>
               <span style={styles.validationStatus}>
-                Status: <strong style={getStatusColor(validation.status)}>{validation.status}</strong>
+                Status: <strong style={{ color: getStatusColor(validation.status) }}>{validation.status}</strong>
               </span>
               <span style={styles.validationValid}>
                 {validation.isValid ? '✓ Valid' : '✕ Invalid'}

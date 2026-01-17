@@ -87,7 +87,7 @@ function App() {
             </div>
           )}
           
-          {project && project.outlets.length > 0 && (
+          {project && project.outlets.length > 0 && validation && (
             <div style={{ marginTop: '20px' }}>
               <ValidationDetailsPanel 
                 validation={validation}

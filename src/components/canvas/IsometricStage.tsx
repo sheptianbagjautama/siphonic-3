@@ -1,6 +1,6 @@
 // Isometric Stage - main Konva canvas component
 
-import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Stage } from 'react-konva';
 import { GridLayer } from './GridLayer';
 import { NodeLayer } from './NodeLayer';
