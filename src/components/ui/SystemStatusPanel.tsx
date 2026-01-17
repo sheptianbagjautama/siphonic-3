@@ -79,19 +79,19 @@ export const SystemStatusPanel: React.FC<SystemStatusPanelProps> = ({ validation
             </div>
           </div>
         )}
-
-        {validation.isValid && validation.status === 'OK' && (
-          <div style={styles.success}>
-            <div style={styles.successIcon}>✓</div>
-            <div>
-              <strong>System Ready</strong>
-              <p style={styles.successText}>
-                All validation checks passed successfully.
-              </p>
-            </div>
-          </div>
-        )}
       </div>
+
+      {validation.isValid && validation.status === 'OK' && (
+        <div style={styles.success}>
+          <div style={styles.successIcon}>✓</div>
+          <div>
+            <strong>System Ready</strong>
+            <p style={styles.successText}>
+              All validation checks passed successfully.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

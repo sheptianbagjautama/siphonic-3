@@ -20,6 +20,7 @@ export interface IsometricStageHandle {
   zoomIn: () => void;
   zoomOut: () => void;
   resetView: () => void;
+  getStage: () => any;
 }
 
 export const IsometricStage = forwardRef<IsometricStageHandle, IsometricStageProps>((
@@ -57,6 +58,7 @@ export const IsometricStage = forwardRef<IsometricStageHandle, IsometricStagePro
       updateZoom(1);
       setStagePos({ x: 0, y: 0 });
     },
+    getStage: () => stageRef.current,
   }));
 
   const handleWheel = (e: any) => {

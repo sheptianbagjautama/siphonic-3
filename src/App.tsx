@@ -5,12 +5,17 @@ import { useProjectStore } from '@/store/projectStore';
 import { ProjectForm } from '@/components/ui/ProjectForm';
 import { SystemStatusPanel } from '@/components/ui/SystemStatusPanel';
 import { ValidationDetailsPanel } from '@/components/ui/ValidationDetailsPanel';
+import { ReportPanel } from '@/components/ui/ReportPanel';
+import { ExportControls } from '@/components/ui/ExportControls';
 import { CanvasControls } from '@/components/ui/CanvasControls';
 import { IsometricStage, IsometricStageHandle } from '@/components/canvas/IsometricStage';
+import { exportAsImage, exportAsBlob } from '@/modules/export/imageExport';
+import { exportAsPDF } from '@/modules/export/pdfExport';
 
 function App() {
   const { project, pipes, validation, updateOutlet } = useProjectStore();
   const [currentZoom, setCurrentZoom] = useState(1);
+  const [showReport, setShowReport] = useState(false);
   const stageRef = useRef<IsometricStageHandle>(null);
 
   const handleOutletDragEnd = (id: string, x: number, y: number) => {
@@ -29,11 +34,46 @@ function App() {
     stageRef.current?.resetView();
   };
 
+  const handleExportImage = (format: 'png' | 'jpeg') => {
+    if (stageRef.current) {
+      const stage = (stageRef.current as any).getStage?.();
+      if (stage) {
+        exportAsImage(stage, project?.name || 'siphonic-system', format);
+      }
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (stageRef.current) {
+      const stage = (stageRef.current as any).getStage?.();
+      if (stage) {
+        const blob = await exportAsBlob(stage, 'png');
+        await exportAsPDF(project, pipes, validation, blob);
+      }
+    }
+  };
+
   return (
     <div style={styles.app}>
       <header style={styles.header}>
-        <h1 style={styles.headerTitle}>🌧️ Siphonic Roof Drainage Design Tool</h1>
-        <p style={styles.headerSubtitle}>Phase 3 - Engineering Logic & Validation</p>
+        <div>
+          <h1 style={styles.headerTitle}>🌧️ Siphonic Roof Drainage Design Tool</h1>
+          <p style={styles.headerSubtitle}>Phase 4 - Professional Features</p>
+        </div>
+        {project && (
+          <div style={styles.headerActions}>
+            <button
+              style={showReport ? styles.activeButton : styles.reportButton}
+              onClick={() => setShowReport(!showReport)}
+            >
+              📊 {showReport ? 'Hide Report' : 'Show Report'}
+            </button>
+            <ExportControls
+              onExportImage={handleExportImage}
+              onExportPDF={handleExportPDF}
+            />
+          </div>
+        )}
       </header>
 
       <div style={styles.layout}>
@@ -48,11 +88,23 @@ function App() {
           )}
           
           {project && project.outlets.length > 0 && (
-            <ValidationDetailsPanel 
-              validation={validation}
-              outlets={project.outlets}
-              pipes={pipes}
-            />
+            <div style={{ marginTop: '20px' }}>
+              <ValidationDetailsPanel 
+                validation={validation}
+                outlets={project.outlets}
+                pipes={pipes}
+              />
+            </div>
+          )}
+
+          {showReport && project && (
+            <div style={{ marginTop: '20px' }}>
+              <ReportPanel
+                project={project}
+                pipes={pipes}
+                validation={validation}
+              />
+            </div>
           )}
         </aside>
 
@@ -116,6 +168,36 @@ const styles = {
     color: '#fff',
     padding: '20px 40px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerActions: {
+    display: 'flex',
+    gap: '12px',
+    alignItems: 'center',
+  },
+  reportButton: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    color: '#fff',
+    border: '2px solid rgba(255,255,255,0.5)',
+    borderRadius: '6px',
+    padding: '10px 16px',
+    fontSize: '14px',
+    fontWeight: 'bold' as const,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
+  activeButton: {
+    backgroundColor: '#fff',
+    color: '#2196F3',
+    border: '2px solid #fff',
+    borderRadius: '6px',
+    padding: '10px 16px',
+    fontSize: '14px',
+    fontWeight: 'bold' as const,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
   },
   headerTitle: {
     margin: 0,
